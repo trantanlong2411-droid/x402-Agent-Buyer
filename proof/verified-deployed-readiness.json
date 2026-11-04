@@ -1,0 +1,37 @@
+{
+  "schema": "pharos-x402-agent-buyer-deployed-readiness-v1",
+  "observedAtUtc": "2026-11-04T19:41:28Z",
+  "sourceRun": "https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41899318706",
+  "chainId": 688689,
+  "network": "eip155:688689",
+  "worker": "https://x402-agent-buyer.trantanlong2411.workers.dev/",
+  "merchant": "https://x402-paywalled-api.trantanlong2411.workers.dev/",
+  "directAtlanticBlock": "32317114",
+  "directTestUsdcContract": "0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B",
+  "checks": {
+    "durableTaskCreated": true,
+    "liveBuyerBalanceRead": true,
+    "liveBuyerSampleBalanceUSDC": "0.0",
+    "firstRealMerchantEndpoint": {
+      "path": "/api/insights",
+      "HTTP402": true,
+      "priceAtomic": "1000",
+      "USDC": "0.001"
+    },
+    "secondRealMerchantEndpoint": {
+      "path": "/api/report",
+      "HTTP402": true,
+      "priceAtomic": "3000",
+      "USDC": "0.003"
+    },
+    "invalidSignedPayloadBlockedBeforePayment": true,
+    "budgetStopBeforeSignature": true,
+    "testedBudgetUSDC": "0.0005",
+    "totalConfirmedSpentUSDC": "0",
+    "bothDryRunsClearlySimulated": true,
+    "dryRunTransactionHashesAreNull": true
+  },
+  "liveSignedPaymentsVerified": 0,
+  "realPaymentHashes": [],
+  "caution": "This production run validates Worker, real price quotes, direct token balance and budget guard. It does NOT claim two actual paid x402 receipts; the user's testnet wallet must sign two separate authorizations and complete chain settlement."
+}
