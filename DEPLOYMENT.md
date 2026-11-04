@@ -24,7 +24,7 @@ The exact address printed in your Cloudflare Dashboard is authoritative. If it d
 ## After production deploy
 
 Open these public endpoints:
-- `GET /api/health`: `ok:true`, `network:"eip155:688689"`, `durableStorage:true`, `spendLimitEnforced:true`, `signingKeyOnServer:false`, and current version `pharos-x402-agent-buyer-2026-11-05-v2`.
+- `GET /api/health`: `ok:true`, `network:"eip155:688689"`, `durableStorage:true`, `spendLimitEnforced:true`, `signingKeyOnServer:false`, and current version `pharos-x402-agent-buyer-2026-11-05-v4`.
 - `GET /api/demo`: two labeled `DRY_RUN_ONLY` examples, `SIMULATED_COMPLETED` and `SIMULATED_STOPPED_BUDGET`. Both show null hashes; no payments are sent.
 - `POST /api/task`: the browser creates a UUIDv4 task and shows a private saved task key; do not share that key in reviewer notes.
 
