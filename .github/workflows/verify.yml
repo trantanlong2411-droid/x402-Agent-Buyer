@@ -1,0 +1,21 @@
+name: x402 Agent Buyer — unit tests and Cloudflare Worker bundle
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  buyer-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Test exact budget accounting, x402 signatures, paid receipt validation, retry policy and two task demos
+        run: npm test
+      - name: Compile Cloudflare SQLite Durable Object Worker
+        run: npm run build
