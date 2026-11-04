@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {Wallet} from 'ethers';
-import {TOKEN,verifyTransferEvidence,verifyLiveReceipt,validateMerchantReceipt} from '../src/chain.mjs';
+import {Wallet,Interface} from 'ethers';
+import {TOKEN,verifyTransferEvidence,verifyLiveReceipt,validateMerchantReceipt,readAtlanticBuyerBalance} from '../src/chain.mjs';
 import {USDC,NETWORK} from '../src/config.mjs';
 const payer=Wallet.createRandom().address,payTo=Wallet.createRandom().address,relay=Wallet.createRandom().address;
 const hash='0x'+'ab'.repeat(32);
@@ -46,4 +46,28 @@ test('merchant 200 must include PAYMENT-RESPONSE and matching tx and buyer',()=>
  assert.equal(result.transaction,hash);
  assert.throws(()=>validateMerchantReceipt(header,{ok:true,payment:{transaction:'0x'+'a'.repeat(64)}},step,payer),/matching/);
  assert.throws(()=>validateMerchantReceipt(null,{ok:true,payment:receipt},step,payer),/absent/);
+});
+
+test('reads actual buyer token units from the exact Atlantic USDC contract with no merchant balance dependency',async()=>{
+ const iface=new Interface(['function balanceOf(address) view returns(uint256)']);
+ const calls=[];
+ const transport=async(_config,method,params=[])=>{
+  calls.push(method);
+  if(method==='eth_chainId')return '0xa8231';
+  if(method==='eth_blockNumber')return '0x123';
+  if(method==='eth_call'){
+   assert.equal(params[0].to.toLowerCase(),USDC.toLowerCase());
+   assert.equal(params[1],'0x123');
+   assert.equal(iface.decodeFunctionData('balanceOf',params[0].data)[0],payer);
+   return iface.encodeFunctionResult('balanceOf',[20000000n]);
+  }
+  throw Error('Unexpected RPC call '+method);
+ };
+ const result=await readAtlanticBuyerBalance(payer,{},transport);
+ assert.equal(result.ok,true);assert.equal(result.network,NETWORK);
+ assert.equal(result.asset.toLowerCase(),USDC.toLowerCase());
+ assert.equal(result.balanceUSDC,'20.0');
+ assert.equal(result.eligibleForInsights,true);
+ assert.equal(result.eligibleForReport,true);
+ assert.equal(calls.includes('eth_sendRawTransaction'),false);
 });
