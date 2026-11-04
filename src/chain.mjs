@@ -1,4 +1,4 @@
-import {Interface} from 'ethers';
+import {Interface,formatUnits,getAddress} from 'ethers';
 import {CHAIN_ID,NETWORK,USDC,RPC_DEFAULT,EXPLORER} from './config.mjs';
 export const TOKEN=new Interface([
  'function transferWithAuthorization(address from,address to,uint256 value,uint256 validAfter,uint256 validBefore,bytes32 nonce,uint8 v,bytes32 r,bytes32 s)',
@@ -11,7 +11,7 @@ const bigint=(value,name)=>{
 };
 let rpcCounter=0;
 export async function rpc(config,method,params=[]){
- const allowed=['eth_chainId','eth_getTransactionByHash','eth_getTransactionReceipt','eth_blockNumber'];
+ const allowed=['eth_chainId','eth_getTransactionByHash','eth_getTransactionReceipt','eth_blockNumber','eth_call'];
  if(!allowed.includes(method))throw Error('Forbidden RPC method');
  let last;
  for(let i=0;i<3;i++){
@@ -88,4 +88,24 @@ export function validateMerchantReceipt(header,body,step,payer){
   String(body.payment.transaction||'').toLowerCase()!==receipt.transaction.toLowerCase())
   throw Error('Merchant did not return a matching paid x402 receipt and data');
  return receipt;
+}
+
+const BALANCE_ABI=new Interface(['function balanceOf(address) view returns (uint256)']);
+export async function readAtlanticBuyerBalance(buyer,c,transport=rpc){
+ let wallet;
+ try{wallet=getAddress(String(buyer||''))}catch{throw Error('Invalid EVM buyer address')}
+ if(wallet==='0x0000000000000000000000000000000000000000')throw Error('Zero buyer wallet not supported');
+ const chain=bigint(await transport(c,'eth_chainId',[]),'chain ID');
+ if(chain!==BigInt(CHAIN_ID))throw Error('RPC points to wrong chain');
+ const block=await transport(c,'eth_blockNumber',[]);
+ bigint(block,'block number');
+ const tokenOutput=await transport(c,'eth_call',[
+  {to:USDC,data:BALANCE_ABI.encodeFunctionData('balanceOf',[wallet])},block
+ ]);
+ if(typeof tokenOutput!=='string'||tokenOutput==='0x')throw Error('USDC balanceOf contract returned no data');
+ const amount=BALANCE_ABI.decodeFunctionResult('balanceOf',tokenOutput)[0];
+ return {ok:true,network:NETWORK,block:BigInt(block).toString(),
+  buyer:wallet,asset:USDC,balanceUSDC:formatUnits(amount,6),
+  eligibleForInsights:amount>=1000n,eligibleForReport:amount>=3000n,
+  source:'Direct read-only Pharos Atlantic RPC at the configured Circle test USDC contract'};
 }
