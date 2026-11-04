@@ -22,7 +22,7 @@ export function newTask(input,key,now=Date.now()){
  const payer=addr(input?.payer);if(!payer)throw Error('Connect a nonzero Atlantic EVM buyer wallet');
  const budget=money(input.budgetUSDC??'0.010');
  const perCall=money(input.priceCapUSDC??'0.005');
- if(perCall>budget)throw Error('Per-call limit cannot exceed total task budget');
+ // Independent guards: the per-call cap can exceed the smaller total budget.
  const kind=String(input?.kind||'bundle');
  if(!['bundle','budget-stop'].includes(kind))throw Error('Unknown agent task');
  return {
