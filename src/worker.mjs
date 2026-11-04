@@ -18,7 +18,7 @@ const safeReason=s=>String(s||'').slice(0,180);
 async function merchantQuote(c,route){
  const target=c.seller+route.path;
  const response=await fetch(target,{headers:{'accept':'application/json'},
-  redirect:'error',signal:AbortSignal.timeout(16000)});
+  redirect:'manual',signal:AbortSignal.timeout(16000)});
  if(response.status!==402)throw Error('Merchant must return HTTP 402. Received HTTP '+response.status);
  const header=response.headers.get('PAYMENT-REQUIRED');
  const payload=decodeHeader(header);
@@ -26,7 +26,7 @@ async function merchantQuote(c,route){
 }
 async function merchantPay(c,step,paymentPayload){
  const response=await fetch(c.seller+step.path,{
-  method:'GET',redirect:'error',
+  method:'GET',redirect:'manual',
   headers:{'accept':'application/json','PAYMENT-SIGNATURE':btoa(JSON.stringify(paymentPayload))},
   signal:AbortSignal.timeout(99000)
  });
