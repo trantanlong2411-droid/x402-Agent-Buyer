@@ -37,7 +37,7 @@ assert.equal(health.spendLimitEnforced,true);
 assert.equal(health.signingKeyOnServer,false);
 const balance=await request('/api/balance?address=0x1111111111111111111111111111111111111111');
 console.log('LIVE_BUYER_BALANCE_DIAGNOSTIC',JSON.stringify({status:balance.status,data:balance.value}));
-assert.equal(balance.status,200,'Deployed Worker should read buyer USDC through the trusted merchant');
+assert.equal(balance.status,200,'Deployed Worker should read buyer USDC directly from Atlantic RPC');
 assert.equal(balance.value.ok,true);
 assert.equal(balance.value.network,NETWORK);
 assert.equal(balance.value.asset.toLowerCase(),'0xcfc8330f4bcab529c625d12781b1c19466a9fc8b');
