@@ -40,6 +40,8 @@ footer{color:var(--muted);font-size:12px;margin-top:35px}
 <div class="grid"><div>
 <section class="panel"><div class="row"><h2>01 / Create a buyer task</h2><button class="secondary" id="connect">Connect Atlantic wallet</button></div>
 <p id="wallet" class="small">No wallet connected yet.</p>
+<div class="status" id="buyerBalance">Buyer USDC balance not yet checked.</div>
+<div class="actions"><button class="secondary" id="checkBalance">Check my buyer USDC balance</button><a href="https://faucet.circle.com/" target="_blank" rel="noopener">Circle Pharos test USDC faucet ↗</a></div>
 <p class="small">The agent is limited to the trusted Pharos x402 Paywalled API seller. It calls <code>/api/insights</code> first and <code>/api/report</code> next, moving forward only after a verified paid receipt.</p>
 <label for="scenario">Demo task</label><select id="scenario">
 <option value="bundle">Complete research bundle — two API purchases</option>
@@ -116,6 +118,29 @@ footer{color:var(--muted);font-size:12px;margin-top:35px}
   }
   const address=String(accounts[0]);setWallet(address);return address;
  }
+ function atomicUSDC(value){
+  const m=String(value||'').match(/^(\d+)(?:\.(\d{1,6}))?$/);
+  if(!m)throw Error('Malformed USDC balance returned by chain');
+  return BigInt(m[1])*1000000n+BigInt((m[2]||'').padEnd(6,'0'));
+ }
+ async function checkBuyerBalance(account){
+  const payer=account||await connect();
+  const box=$('buyerBalance');box.textContent='Reading test USDC balance at the configured Atlantic token contract…';
+  try{
+   const r=await fetch('/api/balance?address='+encodeURIComponent(payer),{cache:'no-store'});
+   const data=await r.json();
+   if(!r.ok||!data.ok)throw Error(data.error||'Balance query unavailable');
+   if(String(data.buyer).toLowerCase()!==payer.toLowerCase()||
+     String(data.asset).toLowerCase()!==USDC.toLowerCase())
+    throw Error('Token or buyer wallet mismatch in RPC response');
+   const enough=atomicUSDC(data.balanceUSDC)>=1000n;
+   box.textContent='Buyer '+payer+' · '+data.balanceUSDC+' test USDC · block '+data.block+
+    '. '+(enough?'Test USDC is available; each purchase still requires its own check.':
+      'Balance is insufficient for the first 0.001-USDC API. Faucet to THIS address and check again.');
+   box.className='status '+(enough?'ok':'bad');
+   return data;
+  }catch(e){box.className='status bad';box.textContent='Balance check failed: '+e.message;return null}
+ }
  async function api(action,fields={}){
   const key=$('key').value.trim();
   const response=await fetch('/api/task',{method:'POST',headers:{'content-type':'application/json'},
@@ -165,7 +190,8 @@ footer{color:var(--muted);font-size:12px;margin-top:35px}
   else if(step?.reason)msg(step.status+': '+step.reason);
   else msg('Task '+job.state+'. Click Advance agent to discover the next paid API price.');
  }
- $('connect').onclick=async()=>{try{await connect()}catch(e){$('wallet').textContent=e.message}};
+ $('connect').onclick=async()=>{try{const address=await connect();await checkBuyerBalance(address)}catch(e){$('wallet').textContent=e.message}};
+ $('checkBalance').onclick=async()=>{try{const address=await connect();await checkBuyerBalance(address)}catch(e){$('buyerBalance').textContent=e.message}};
  $('scenario').onchange=()=>{
   if($('scenario').value==='budget-stop'){$('budget').value='0.002';$('cap').value='0.005';}
   else {$('budget').value='0.010';$('cap').value='0.005';}
@@ -208,6 +234,11 @@ footer{color:var(--muted);font-size:12px;margin-top:35px}
    const offer=step.quote?.offer;
    if(!offer||offer.network!=='eip155:688689'||offer.asset.toLowerCase()!==USDC.toLowerCase())
     throw Error('Invalid Atlantic USDC quote');
+   const liveBalance=await checkBuyerBalance(account);
+   if(!liveBalance)throw Error('Unable to verify the buyer USDC balance; payment signing blocked.');
+   if(atomicUSDC(liveBalance.balanceUSDC)<BigInt(offer.amount))
+    throw Error('Buyer has only '+liveBalance.balanceUSDC+' test USDC at the correct contract, less than '+step.quotedUSDC+
+     ' USDC. Faucet to '+account+' and retry only after the balance appears.');
    if(!confirm('Sign a TESTNET authorization to spend '+step.quotedUSDC+' USDC for '+step.title+
     '? The facilitator may settle it on-chain. Remaining task budget: '+
     ((BigInt(current.budgetAtomic)-BigInt(current.spentAtomic))/1000000n).toString()+'+ USDC'))
