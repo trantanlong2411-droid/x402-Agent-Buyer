@@ -40,7 +40,7 @@ footer{color:var(--muted);font-size:12px;margin-top:35px}
 <div class="grid"><div>
 <section class="panel"><div class="row"><h2>01 / Create a buyer task</h2><button class="secondary" id="connect">Connect Atlantic wallet</button></div>
 <p id="wallet" class="small">No wallet connected yet.</p>
-<p class="small">The agent is limited to the trusted Pharos x402 Paywalled API seller. A task requests Insights first, then Report, and only moves forward after a verified paid receipt.</p>
+<p class="small">The agent is limited to the trusted Pharos x402 Paywalled API seller. It calls <code>/api/insights</code> first and <code>/api/report</code> next, moving forward only after a verified paid receipt.</p>
 <label for="scenario">Demo task</label><select id="scenario">
 <option value="bundle">Complete research bundle — two API purchases</option>
 <option value="budget-stop">Budget stop — decline second API request</option>
@@ -58,7 +58,7 @@ footer{color:var(--muted);font-size:12px;margin-top:35px}
 </section>
 </div><aside>
 <section class="panel"><h2>03 / Reviewer dry-run demonstrations</h2>
-<p class="small">These run the same decision logic with known sample prices <b>0.001</b> and <b>0.003</b> test USDC. They are simulations, NOT blockchain payments or proof of completed settlement.</p>
+<p class="small">DRY_RUN_ONLY: These run the same decision logic with known sample prices <b>0.001</b> and <b>0.003</b> test USDC. They are simulations, NOT blockchain payments or proof of completed settlement.</p>
 <div class="actions"><button id="dryRun" class="secondary">Run both dry-run demos</button></div>
 <h3>Demo A · Agent completes its plan</h3><pre id="completeDemo">Run the demo to see two simulated purchases within budget.</pre>
 <h3>Demo B · Agent stops at the budget</h3><pre id="stopDemo">Run the demo to see second API rejected after the first planned purchase.</pre>
