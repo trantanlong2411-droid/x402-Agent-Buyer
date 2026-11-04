@@ -35,7 +35,7 @@ A task stores **no raw signing key or signed authorization**. It stores an autho
 ### Demo A: complete a real buyer task (requires test USDC)
 
 1. Open the [deployed agent homepage](https://x402-agent-buyer.trantanlong2411.workers.dev/) and connect a **buyer testnet wallet** on chain 688689. This should be **different from your facilitator wallet**. Use dedicated testnet funds only.
-2. Confirm the buyer wallet has at least **0.004** test USDC of Circle Atlantic USDC `0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B`. The merchant's [balance check](https://x402-paywalled-api.trantanlong2411.workers.dev/) can confirm the exact contract; a faucet transfer must go to this buyer.
+2. Confirm the buyer wallet has at least **0.004** test USDC of Circle Atlantic USDC `0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B`. The buyer agent's built-in **Check my buyer USDC balance** reads the exact Circle USDC contract directly through Atlantic RPC; the faucet transfer must reach this buyer address.
 3. Choose **Complete research bundle**. Set total budget `0.010` and per-call price cap `0.005`.
 4. Click **Create & start task**. Save the random private task key (do not share in public proof).
 5. Click **Advance agent / check next price**. The agent calls the real Insights route, reads 402 and accepts **0.001** USDC only because both limits permit it.
