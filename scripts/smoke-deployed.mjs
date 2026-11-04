@@ -40,7 +40,7 @@ assert.equal(balance.status,200,'Deployed Worker should read buyer USDC through 
 assert.equal(balance.value.ok,true);
 assert.equal(balance.value.network,NETWORK);
 assert.equal(balance.value.asset.toLowerCase(),'0xcfc8330f4bcab529c625d12781b1c19466a9fc8b');
-assert.match(String(balance.value.balanceUSDC),/^\\d+(?:\\.\\d+)?$/);
+assert.match(String(balance.value.balanceUSDC),/^\d+(?:\.\d+)?$/);
 console.log('LIVE_BUYER_USDC_BALANCE_VERIFIED',JSON.stringify({
  asset:balance.value.asset,balanceUSDC:balance.value.balanceUSDC,block:balance.value.block
 }));
