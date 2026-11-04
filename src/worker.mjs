@@ -1,7 +1,7 @@
 import {DurableObject} from 'cloudflare:workers';
 import {BUILD_VERSION,NETWORK,CHAIN_ID,ROUTES,USDC,EXPLORER,config} from './config.mjs';
 import {addr,dollars,newTask,validateChallenge,decide,verifySignedEnvelope,record,finalizePaid,simulateTask} from './policy.mjs';
-import {decodeHeader,validateMerchantReceipt,verifyLiveReceipt} from './chain.mjs';
+import {decodeHeader,validateMerchantReceipt,verifyLiveReceipt,readAtlanticBuyerBalance} from './chain.mjs';
 import {PAGE} from './page.mjs';
 
 const json=(x,status=200)=>Response.json(x,{status,
@@ -239,18 +239,8 @@ export default {
   if(req.method==='GET'&&path==='/api/balance'){
    const buyer=addr(url.searchParams.get('address'));
    if(!buyer)return error('Valid public EVM buyer address required',400);
-   try{
-    const merchant=config(env);
-    const upstream=await fetch(merchant.seller+'/api/balance?address='+encodeURIComponent(buyer),{
-     redirect:'manual',signal:AbortSignal.timeout(16000)
-    });
-    if(upstream.status!==200)throw Error('Trusted merchant balance endpoint returned HTTP '+upstream.status);
-    const data=await upstream.json();
-    if(data.ok!==true||String(data.buyer).toLowerCase()!==buyer.toLowerCase()||
-       String(data.asset).toLowerCase()!==USDC.toLowerCase()||data.network!==NETWORK)
-      throw Error('Merchant returned inconsistent token balance or network');
-    return json({...data,source:'Trusted x402 merchant on-chain balance query'});
-   }catch(e){return error('Buyer balance unavailable: '+String(e.message||e),503)}
+   try{return json(await readAtlanticBuyerBalance(buyer,config(env)))}
+   catch(e){return error('Buyer balance unavailable: '+String(e.message||e),503)}
   }
   if(req.method==='GET'&&path==='/api/demo')
    return json({ok:true,mode:'DRY_RUN_ONLY',examples:{
