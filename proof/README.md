@@ -1,5 +1,15 @@
 # x402 Agent Buyer — reviewer evidence
 
+## Verified deployed production status — 5 November 2026 (Asia/Ho_Chi_Minh)
+
+The [Cloudflare production end-to-end readiness run](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41899349893) **PASSED** for Buyer Worker v4. The run checked actual Atlantic RPC block **32317150**, USDC contract balanceOf, persisted task state, both real merchant 402 routes at 0.001/0.003 USDC, budget refusal *before signing*, and invalid signed payload rejection. It also checked both clearly labeled budget demos. [Permanent compact evidence](./verified-deployed-readiness.json) is available, along with the GitHub Actions artifact.
+
+The [latest unit/Worker build run](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41899349890) passed **13/13 tests**.
+
+**Not yet proven:** A real buyer task with two independently verified paid USDC transfer hashes and completed job state. This requires the owner to connect/fund a Pharos Atlantic buyer wallet and approve the EIP-712 signatures. Neither the test run nor dry runs moved tokens.
+
+
+
 **Pharos Agent Arena / HARD / PAYMENTS — x402 Agent Buyer**
 
 - **Proof Link (once live):** https://x402-agent-buyer.trantanlong2411.workers.dev/
