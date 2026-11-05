@@ -1,0 +1,49 @@
+{
+  "schema": "pharos-x402-agent-buyer-new-wallet-two-tx-public-evidence-v1",
+  "observedAtUtc": "2026-11-05T08:11:54Z",
+  "verifierRun": "https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41992593136",
+  "chainId": 688689,
+  "network": "eip155:688689",
+  "testUSDC": "0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B",
+  "distinctHashes": 2,
+  "buyer": "0x7376422B448cf185223e4C0D7c30FbeE12E4437f",
+  "merchantReceivingAddress": "0x4Fe2CC4Ce85fD93F327E2e121213474247F65242",
+  "transactions": [
+    {
+      "hash": "0xdf57e0785b6e0997fcd1dc56a40e9db64a978f97b3e6ba451bc4150d1b2bcc7e",
+      "block": "32341422",
+      "amountUSDC": "0.001",
+      "confirmed": true,
+      "transferEventVerified": true,
+      "method": "transferWithAuthorization",
+      "payerDiffersReceiver": true
+    },
+    {
+      "hash": "0xc0e8387c01e147928b38e825dfc33e07c7502d8c17d071705a2ae4495966dab1",
+      "block": "32341359",
+      "amountUSDC": "0.001",
+      "confirmed": true,
+      "transferEventVerified": true,
+      "method": "transferWithAuthorization",
+      "payerDiffersReceiver": true
+    }
+  ],
+  "totalVerifiedGrossUSDC": "0.002",
+  "distinctMerchantPayment": true,
+  "expectedMerchantEndpoints": [
+    {
+      "path": "/api/insights",
+      "priceUSDC": "0.001"
+    },
+    {
+      "path": "/api/report",
+      "priceUSDC": "0.003"
+    }
+  ],
+  "hasConfirmedReportPriceTransfer": false,
+  "hasTwoDifferentMatchingRoutePrices": false,
+  "agentBuyerCompletedState": "NOT_YET_VERIFIED",
+  "paymentResponseHeaders": "NOT_YET_VERIFIED",
+  "exactEndpointAttribution": "NOT_INFERABLE_FROM_PUBLIC_TRANSACTION_ALONE",
+  "interpretation": "Both transactions are real 0.001 USDC transfers from new buyer to distinct receiver, but there is no 0.003 USDC transfer or task-completion proof. Do not submit as full x402 Agent Buyer 200-point evidence."
+}
