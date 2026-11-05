@@ -1,0 +1,30 @@
+name: Agent Buyer — verify new buyer wallet two x402 transaction hashes
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/verify-new-buyer-transactions.mjs
+      - .github/workflows/verify-new-buyer-transactions.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-atlantic-receipts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Independently verify two real Atlantic x402 buyer receipts
+        run: node scripts/verify-new-buyer-transactions.mjs
+      - name: Preserve observed transaction evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: x402-new-buyer-two-hashes-rpc-evidence
+          path: proof/new-buyer-two-transaction-audit.json
+          retention-days: 30
+          if-no-files-found: warn
