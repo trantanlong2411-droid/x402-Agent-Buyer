@@ -44,6 +44,19 @@ There is **no longer a self-transfer**. However both confirmed amounts were 0.00
 
 **Next verification:** Open the original persisted buyer task on the live homepage, confirm `/api/insights` is marked `PAID` with a validated hash, then advance to `/api/report` with the price **0.003 USDC**; approve only one new authorization if the task is awaiting signature, and verify that the task reaches `COMPLETED` with `0.004` confirmed USDC. If the original task is uncertain, do **not** re-sign; reconcile first. Separately demonstrate a `STOPPED_BUDGET` task.
 
+## Verified latest two separate priced API payments (5 November 2026)
+
+The [independent **successful** Pharos Atlantic RPC audit](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41996395206) confirmed the following real USDC EIP-3009 transfers from buyer `0x7376422B448cf185223e4C0D7c30FbeE12E4437f` to a different receiving wallet `0x4Fe2CC4Ce85fD93F327E2e121213474247F65242`:
+
+| API price matched | Real transaction | Confirmed block | Amount |
+| --- | --- | --- | --- |
+| Insights | [0xc08118…bcf9](https://atlantic.pharosscan.xyz/tx/0xc08118f7ce2db571ab4c850684ff611931c27a2c3687cbf624bd60081583bcf9) | 32342444 | **0.001 USDC** |
+| Report | [0x4a603e…61e1](https://atlantic.pharosscan.xyz/tx/0x4a603ea2d43512a76cc21f2d64b09e1ec4e07c34adc929526b514289ccfa61e1) | 32342455 | **0.003 USDC** |
+
+**Total 0.004 test USDC confirmed**, in two distinct authorization nonces. The buyer and receiver are different; both token/transfer logs are valid and the amounts and receiver match the current seller route-specific 402 quotes. [Persistent evidence JSON](./final-two-api-payment-evidence.json).
+
+**Important proof boundary:** A blockchain receipt does not identify the precise HTTP path or prove that the private Durable Object task shows `COMPLETED`, two `PAID` entries and a response payload. Those should be verified in the website's **Agent execution and running balance** panel, with the private task access key hidden. A separate budget-stop demo is also required for complete Hard-task evidence. The on-chain transactions are fully verified, but these two remaining items must not be claimed as tested solely from their hashes.
+
 ## Five required criteria and evidence
 
 1. **Two distinct endpoints:** live `/api/insights` at price 0.001 USDC, `/api/report` at price 0.003 USDC. Their actual challenges are separately retrieved, not invented.
