@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Wallet,hexlify,randomBytes} from 'ethers';
-import {newTask,validateChallenge,decide,verifySignedEnvelope,finalizePaid,simulateTask,money,dollars,TYPE} from '../src/policy.mjs';
+import {newTask,validateChallenge,decide,isSelfPayment,verifySignedEnvelope,finalizePaid,simulateTask,money,dollars,TYPE} from '../src/policy.mjs';
 import {SELLER_DEFAULT,ROUTES,USDC,NETWORK} from '../src/config.mjs';
 
 const payer=Wallet.createRandom();
@@ -92,4 +92,14 @@ test('full dry run demonstrates completed task and a budget stop without fabrica
  assert.equal(stop.steps[1].result,'STOPPED_BUDGET');
  assert.equal(stop.spentUSDC,'0.001');
  assert.equal(stop.realTxHashes.length,0);
+});
+
+test('self-payment is detected even when recipient/payee lettercase differs',()=>{
+ const t=task();
+ const ownQuote=validateChallenge({
+  ...quote(),accepts:[{...quote().accepts[0],payTo:payer.address.toLowerCase()}]
+ },ROUTES[0],SELLER_DEFAULT);
+ assert.equal(isSelfPayment(t,ownQuote),true);
+ const external=validateChallenge(quote(),ROUTES[0],SELLER_DEFAULT);
+ assert.equal(isSelfPayment(t,external),false);
 });
