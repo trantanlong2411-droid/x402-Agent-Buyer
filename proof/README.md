@@ -18,6 +18,19 @@ The [latest unit/Worker build run](https://github.com/trantanlong2411-droid/x402
 - [Deployed Worker + merchant quote workflow](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/workflows/verify-deployed.yml)
 - **Merchant:** https://x402-paywalled-api.trantanlong2411.workers.dev/
 
+## Real on-chain transaction audit — 5 November 2026
+
+The [successful independent Atlantic RPC check](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41988630613) decoded the two user-provided hashes and proved both transactions **succeeded** on Atlantic, with EIP-3009 transfer authorization, USDC contract and matching ERC-20 Transfer events:
+
+| Hash | Block | USDC transferred | Buyer → receiving wallet |
+| --- | --- | --- | --- |
+| [0x4aac6200…2db30](https://atlantic.pharosscan.xyz/tx/0x4aac620082af15d20b12543a7c39fc853fbeda76ac89c2c641c5bd597ec2db30) | 32340108 | 0.001 | same wallet (self-transfer) |
+| [0x6527281d…e7118](https://atlantic.pharosscan.xyz/tx/0x6527281d3034e025466aacbf6809f6c6993fa06597dea0886d45fc0e9d8e7118) | 32340222 | 0.001 | same wallet (self-transfer) |
+
+Both used `0x4Fe2CC4Ce85fD93F327E2e121213474247F65242` as payer **and** recipient. User-reported prices 0.005/0.003 were not the observed transfer amounts. These hashes are **not sufficient** to show purchases of the two different priced resources (0.001 Insights and 0.003 Report) or a completed buyer task. Evidence: [JSON](./user-reported-two-tx-audit.json).
+
+The buyer code now refuses self-payments before signing and before counting receipts. To complete this Hard task, use a **different funded Buyer wallet**, sign one 0.001 Insights payment and a separate 0.003 Report payment, confirm both real explorer hashes plus the agent's `COMPLETED` status and `0.004 USDC` total, and show a `STOPPED_BUDGET` task. Do not share a private task key.
+
 ## Five required criteria and evidence
 
 1. **Two distinct endpoints:** live `/api/insights` at price 0.001 USDC, `/api/report` at price 0.003 USDC. Their actual challenges are separately retrieved, not invented.
