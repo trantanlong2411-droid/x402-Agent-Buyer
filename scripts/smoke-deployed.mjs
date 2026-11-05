@@ -88,6 +88,7 @@ console.log('LIVE_AGENT_BUDGET_REJECTION_BEFORE_SIGNATURE',JSON.stringify({
  state:'STOPPED_BUDGET',priceUSDC:'0.001',budgetUSDC:'0.0005',spentUSDC:'0'
 }));
 const merchantPrices={};
+const merchantPayTo={};
 for(const path of ['/api/insights','/api/report']){
  const r=await fetch(SELLER_DEFAULT+path,{signal:AbortSignal.timeout(16000)});
  assert.equal(r.status,402,'The trusted merchant should return a real x402 challenge');
@@ -97,9 +98,24 @@ for(const path of ['/api/insights','/api/report']){
  assert.equal(quote.x402Version,2);
  assert.equal(quote.accepts[0].network,NETWORK);
  merchantPrices[path]=quote.accepts[0].amount;
+ merchantPayTo[path]=quote.accepts[0].payTo;
 }
 assert.equal(merchantPrices['/api/insights'],'1000');
 assert.equal(merchantPrices['/api/report'],'3000');
+const ownKey=randomUUID();
+const selfCreated=await task(ownKey,'create',{
+ kind:'bundle',payer:merchantPayTo['/api/insights'],budgetUSDC:'0.010',priceCapUSDC:'0.005'
+});
+assert.equal(selfCreated.status,201);
+const selfQuote=await task(ownKey,'next');
+assert.equal(selfQuote.status,200);
+assert.equal(selfQuote.value.job.state,'STOPPED_SELF_PAYMENT');
+assert.equal(selfQuote.value.job.totalPurchases,0);
+assert.equal(selfQuote.value.job.spentAtomic,'0');
+console.log('LIVE_SELF_PAYMENT_POLICY_VERIFIED',JSON.stringify({
+ state:selfQuote.value.job.state,charged:false,
+ note:'Buyer same as merchant receiving wallet is denied before a signature'
+}));
 const evidence={
  schema:'pharos-x402-agent-buyer-deployed-readiness-v1',
  observedAtUtc:new Date().toISOString(),buyerWebsite:base,merchant:SELLER_DEFAULT,
@@ -107,7 +123,7 @@ const evidence={
  checks:{
   durableStorage:true,liveX402QuotesForTwoDifferentRoutes:true,
   quoteFirstRoutePriceUSDC:'0.001',quoteSecondRoutePriceUSDC:'0.003',
-  budgetStopBeforeSignature:true,perCallCapConfigured:true,
+  budgetStopBeforeSignature:true,selfPaymentBlockedBeforeSignature:true,perCallCapConfigured:true,
   rejectedInvalidSignedPayload:true,zeroSpendRecordedUntilOnchainSuccess:true,
   completeDryRunWithoutRealPayment:true,budgetStopDryRunWithoutRealPayment:true
  },
