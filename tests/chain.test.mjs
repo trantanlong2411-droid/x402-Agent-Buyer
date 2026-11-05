@@ -25,6 +25,12 @@ test('requires real successful on-chain receipt, exact calldata and USDC Transfe
  assert.equal(verifyTransferEvidence({...tx,input:'0x1234'},receipt,step,payer).ok,false);
  assert.equal(verifyTransferEvidence(tx,receipt,{...step,quotedAmount:'3000'},payer).ok,false);
 });
+test('confirmed transfer back to the payer is not a separate merchant purchase',()=>{
+ const {tx,receipt,step}=fixture();
+ const own={...step,quote:{offer:{payTo:payer}}};
+ assert.equal(verifyTransferEvidence(tx,receipt,own,payer).ok,false);
+ assert.match(verifyTransferEvidence(tx,receipt,own,payer).reason,/Self-transfer/);
+});
 test('onchain RPC recheck verifies the Atlantic chain and known tx hash',async()=>{
  const {step,tx,receipt}=fixture();
  const mocked=async(_,method)=>{
