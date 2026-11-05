@@ -1,0 +1,30 @@
+name: x402 Agent Buyer — verify two user-supplied Atlantic payment hashes
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verify-user-transactions.mjs'
+      - '.github/workflows/verify-user-transactions.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-user-payments:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Inspect user-reported transactions using actual Atlantic RPC and ERC-20 receipt logs
+        run: node scripts/verify-user-transactions.mjs
+      - name: Preserve on-chain observations (including failed verification)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: x402-user-reported-two-tx-evidence
+          path: proof/user-transactions-verified.json
+          retention-days: 30
+          if-no-files-found: warn
