@@ -31,6 +31,19 @@ Both used `0x4Fe2CC4Ce85fD93F327E2e121213474247F65242` as payer **and** recipien
 
 The buyer code now refuses self-payments before signing and before counting receipts. To complete this Hard task, use a **different funded Buyer wallet**, sign one 0.001 Insights payment and a separate 0.003 Report payment, confirm both real explorer hashes plus the agent's `COMPLETED` status and `0.004 USDC` total, and show a `STOPPED_BUDGET` task. Do not share a private task key.
 
+## New wallet transactions verified — 5 November 2026
+
+The owner switched to a **different Buyer wallet** `0x7376422B448cf185223e4C0D7c30FbeE12E4437f`. Independent read-only Pharos Atlantic receipt checks [passed](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41992593136) for two distinct hashes:
+
+| Transaction | Block | Amount | Buyer → receiver | Result |
+| --- | --- | --- | --- | --- |
+| [0xdf57e0…bcc7e](https://atlantic.pharosscan.xyz/tx/0xdf57e0785b6e0997fcd1dc56a40e9db64a978f97b3e6ba451bc4150d1b2bcc7e) | 32341422 | 0.001 test USDC | 0x7376422B… → 0x4Fe2CC4C… | Successful EIP-3009 with matching USDC Transfer |
+| [0xc0e838…dab1](https://atlantic.pharosscan.xyz/tx/0xc0e8387c01e147928b38e825dfc33e07c7502d8c17d071705a2ae4495966dab1) | 32341359 | 0.001 test USDC | 0x7376422B… → 0x4Fe2CC4C… | Successful EIP-3009 with matching USDC Transfer |
+
+There is **no longer a self-transfer**. However both confirmed amounts were 0.001 (total 0.002). The merchant quote for Report is **0.003**, so these hashes alone **do not prove purchase of both different endpoints or a completed Agent Buyer task**. Public transactions do not encode which paid URL returned data. [Public evidence summary](./new-buyer-two-tx-verified-summary.json). The successful workflow also publishes full RPC observations in its artifact.
+
+**Next verification:** Open the original persisted buyer task on the live homepage, confirm `/api/insights` is marked `PAID` with a validated hash, then advance to `/api/report` with the price **0.003 USDC**; approve only one new authorization if the task is awaiting signature, and verify that the task reaches `COMPLETED` with `0.004` confirmed USDC. If the original task is uncertain, do **not** re-sign; reconcile first. Separately demonstrate a `STOPPED_BUDGET` task.
+
 ## Five required criteria and evidence
 
 1. **Two distinct endpoints:** live `/api/insights` at price 0.001 USDC, `/api/report` at price 0.003 USDC. Their actual challenges are separately retrieved, not invented.
