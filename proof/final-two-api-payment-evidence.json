@@ -1,0 +1,41 @@
+{
+  "schema": "pharos-x402-agent-buyer-two-priced-endpoints-verified-v1",
+  "checkedAtUtc": "2026-11-05",
+  "verifier": "GitHub Actions real read-only Pharos Atlantic RPC transaction and receipt audit",
+  "workflowRun": "https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41996395206",
+  "status": "ON_CHAIN_TWO_DISTINCT_PRICE_LEVELS_VERIFIED",
+  "chainId": 688689,
+  "network": "eip155:688689",
+  "usdcContract": "0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B",
+  "buyer": "0x7376422B448cf185223e4C0D7c30FbeE12E4437f",
+  "receiver": "0x4Fe2CC4Ce85fD93F327E2e121213474247F65242",
+  "transactionEvidence": [
+    {
+      "apiPriceMatches": "/api/insights",
+      "priceUSDC": "0.001",
+      "block": "32342444",
+      "hash": "0xc08118f7ce2db571ab4c850684ff611931c27a2c3687cbf624bd60081583bcf9",
+      "eip3009TransferWithAuthorization": true,
+      "transactionSuccessful": true,
+      "transferEventVerified": true
+    },
+    {
+      "apiPriceMatches": "/api/report",
+      "priceUSDC": "0.003",
+      "block": "32342455",
+      "hash": "0x4a603ea2d43512a76cc21f2d64b09e1ec4e07c34adc929526b514289ccfa61e1",
+      "eip3009TransferWithAuthorization": true,
+      "transactionSuccessful": true,
+      "transferEventVerified": true
+    }
+  ],
+  "totalVerifiedPaidUSDC": "0.004",
+  "sameBuyer": true,
+  "distinctBuyerAndReceiver": true,
+  "twoSeparateNonces": true,
+  "bothMatchMerchantCurrentQuoteAmountAndRecipient": true,
+  "privateBuyerTaskStatus": "NOT_VERIFIED_FROM_PUBLIC_CHAIN",
+  "merchantHttp200AndPaymentResponse": "NOT_VERIFIED_FROM_PUBLIC_CHAIN",
+  "budgetStopScenario": "VERIFIED_IN_PRIOR_PRODUCTION_UNIT_OR_SIMULATION_TESTS; USER LIVE SCENARIO NOT IN THIS TWO-TX AUDIT",
+  "limitation": "Hashes prove two correctly priced Atlantic USDC transfers, but alone cannot prove Buyer Durable Object COMPLETED state or paid HTTP response. Inspect in-app ledger before claiming completed demo."
+}
