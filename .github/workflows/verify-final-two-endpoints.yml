@@ -1,0 +1,30 @@
+name: x402 Agent Buyer — final independent two-endpoint transaction audit
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/verify-final-two-endpoints.mjs
+      - .github/workflows/verify-final-two-endpoints.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  final-atlantic-receipts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Decode both buyer transactions, verify actual onchain USDC and two independently quoted merchant prices
+        run: node scripts/verify-final-two-endpoints.mjs
+      - name: Preserve public receipt audit whether or not it matches
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: x402-agent-buyer-latest-two-tx-audit
+          path: proof/final-two-endpoints-transaction-audit.json
+          retention-days: 30
+          if-no-files-found: warn
