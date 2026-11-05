@@ -58,6 +58,10 @@ export function validateChallenge(challenge,route,origin){
   throw Error('Unexpected merchant payment timeout');
  return {offer:quote,resource:challenge.resource,amount};
 }
+export function isSelfPayment(task,quote){
+ const payee=addr(quote?.offer?.payTo);
+ return Boolean(payee&&addr(task?.payer)?.toLowerCase()===payee.toLowerCase());
+}
 export function decide(task,amount){
  const raw=BigInt(amount),spent=BigInt(task.spentAtomic);
  if(raw>BigInt(task.priceCapAtomic))
