@@ -30,6 +30,18 @@ It uses our previously built and deployed [x402 Paywalled API](https://x402-payw
 
 A task stores **no raw signing key or signed authorization**. It stores an authorization identifier/hash (not its reusable signature) and the resulting transaction hash only after it becomes known. A private UUIDv4 task access key is stored locally in the browser for convenience. Keep it private; someone with the key can inspect the task even though they cannot sign as the buyer.
 
+## Independently checked user-reported transactions (5 November 2026)
+
+The owner supplied two Atlantic Explorer transaction hashes:
+- [0x4aac6200…2db30](https://atlantic.pharosscan.xyz/tx/0x4aac620082af15d20b12543a7c39fc853fbeda76ac89c2c641c5bd597ec2db30): successful EIP-3009 USDC `transferWithAuthorization`, block **32340108**, **0.001 USDC**
+- [0x6527281d…e7118](https://atlantic.pharosscan.xyz/tx/0x6527281d3034e025466aacbf6809f6c6993fa06597dea0886d45fc0e9d8e7118): successful EIP-3009 USDC `transferWithAuthorization`, block **32340222**, **0.001 USDC**
+
+[Actual Atlantic RPC evidence workflow](https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41988630613) verified the token, calldata, matching Transfer logs and two distinct nonces. Both transfers were sent **from and to the same wallet** `0x4Fe2CC4Ce85fD93F327E2e121213474247F65242`. The user mentioned 0.005 / 0.003, but the **on-chain amounts were 0.001 / 0.001**, totaling 0.002 gross USDC self-transfers and zero net USDC paid to a distinct receiving wallet.
+
+**Do not claim the Hard x402 Agent Buyer challenge is complete from these hashes.** They do not demonstrate a 0.003 USDC Report purchase, a verified Agent Buyer `COMPLETED` state or two distinct paid resources. A new buyer task should be created with a buyer EVM wallet **different from the merchant's payTo wallet**, funded with ≥0.004 test USDC. Pay Insights 0.001 and Report 0.003, verify two successful receipts and a 0.004 task running total, then demonstrate STOPPED_BUDGET separately.
+
+For security, Buyer Worker release v5 refuses and logs `STOPPED_SELF_PAYMENT` when the user attempts to authorize an offer paying the same wallet. Confirm that the live Worker version has updated before testing. [Persistent receipt evidence](proof/user-reported-two-tx-audit.json).
+
 ## Reviewer walkthrough — both scenarios
 
 ### Demo A: complete a real buyer task (requires test USDC)
