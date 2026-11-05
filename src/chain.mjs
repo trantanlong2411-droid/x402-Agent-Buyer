@@ -31,6 +31,8 @@ export async function rpc(config,method,params=[]){
  throw Error(String(last?.message||last||'RPC timeout').slice(0,160));
 }
 export function verifyTransferEvidence(tx,receipt,step,payer){
+ if(String(step?.quote?.offer?.payTo||'').toLowerCase()===String(payer||'').toLowerCase())
+  return {ok:false,reason:'Self-transfer from buyer to same wallet cannot count as an independent merchant payment'};
  if(!tx||!receipt)return {ok:false,reason:'Transaction receipt not yet available'};
  if(bigint(receipt.status,'receipt status')!==1n)
   return {ok:false,reason:'Transaction reverted on chain'};
