@@ -1,6 +1,6 @@
 import {DurableObject} from 'cloudflare:workers';
 import {BUILD_VERSION,NETWORK,CHAIN_ID,ROUTES,USDC,EXPLORER,config} from './config.mjs';
-import {addr,dollars,newTask,validateChallenge,decide,verifySignedEnvelope,record,finalizePaid,simulateTask} from './policy.mjs';
+import {addr,dollars,newTask,validateChallenge,decide,isSelfPayment,verifySignedEnvelope,record,finalizePaid,simulateTask} from './policy.mjs';
 import {decodeHeader,validateMerchantReceipt,verifyLiveReceipt,readAtlanticBuyerBalance} from './chain.mjs';
 import {PAGE} from './page.mjs';
 
@@ -89,7 +89,13 @@ export class BuyerTask extends DurableObject{
     return error('Task state changed while obtaining quote; refresh first',409);
    const priceDecision=decide(job,quote.amount);
    item.quotedAmount=quote.amount.toString();item.quotedUSDC=dollars(quote.amount);
-   if(!priceDecision.allowed){
+   if(isSelfPayment(job,quote)){
+    item.status='STOPPED_SELF_PAYMENT';
+    item.reason='The buyer and the merchant receiving wallet are identical. This would be an on-chain self-transfer, not a real purchase from a separate merchant. Start a new task using a different funded testnet buyer wallet.';
+    job.state=item.status;job.stoppedReason=item.reason;
+    noteEvent(item,item.status,item.reason);
+    record(job,'SELF_PAYMENT_REFUSED',item,{reason:item.reason,priceUSDC:item.quotedUSDC});
+   }else if(!priceDecision.allowed){
     item.status=priceDecision.state;item.reason=priceDecision.reason;
     job.state=priceDecision.state;job.stoppedReason=priceDecision.reason;
     noteEvent(item,item.status,item.reason);
@@ -140,6 +146,8 @@ export class BuyerTask extends DurableObject{
   const step=job.steps.find(x=>x.id===input.stepId);
   if(!step||step.status!=='AWAITING_SIGNATURE')
    return error('Payment already attempted or missing a currently approved quote',409);
+  if(isSelfPayment(job,step.quote))
+   return error('Self-payment forbidden: buyer matches merchant receiving wallet. Create a new task using a separate funded buyer wallet.',409);
   let signed;
   try{signed=verifySignedEnvelope(input.paymentPayload,job,step)}
   catch(e){return error('Authorization refused: '+e.message,400)}
