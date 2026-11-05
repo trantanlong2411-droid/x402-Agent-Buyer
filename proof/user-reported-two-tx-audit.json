@@ -1,0 +1,46 @@
+{
+  "schema": "pharos-agent-buyer-independent-two-transaction-audit-v1",
+  "observedAtUtc": "2026-11-05T07:38:30Z",
+  "network": "eip155:688689",
+  "checker": "Live Pharos Atlantic eth_getTransactionByHash + eth_getTransactionReceipt",
+  "workflow": "https://github.com/trantanlong2411-droid/x402-Agent-Buyer/actions/runs/41988630613",
+  "asset": "0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B",
+  "transactions": [
+    {
+      "hash": "0x4aac620082af15d20b12543a7c39fc853fbeda76ac89c2c641c5bd597ec2db30",
+      "block": 32340108,
+      "status": "success",
+      "amountUSDC": "0.001",
+      "method": "transferWithAuthorization",
+      "payer": "0x4Fe2CC4Ce85fD93F327E2e121213474247F65242",
+      "receiver": "0x4Fe2CC4Ce85fD93F327E2e121213474247F65242",
+      "relayer": "0x4fe2cc4ce85fd93f327e2e121213474247f65242",
+      "transferEventVerified": true,
+      "nonce": "0xf2a6db190dfcac5ab324cc87dc35da5c41d655414680473e4c754fc71c912a9d"
+    },
+    {
+      "hash": "0x6527281d3034e025466aacbf6809f6c6993fa06597dea0886d45fc0e9d8e7118",
+      "block": 32340222,
+      "status": "success",
+      "amountUSDC": "0.001",
+      "method": "transferWithAuthorization",
+      "payer": "0x4Fe2CC4Ce85fD93F327E2e121213474247F65242",
+      "receiver": "0x4Fe2CC4Ce85fD93F327E2e121213474247F65242",
+      "relayer": "0x4fe2cc4ce85fd93f327e2e121213474247f65242",
+      "transferEventVerified": true,
+      "nonce": "0x330a049385a6428a8267705c773ab06b7af606f9906ecb78e58a1faa53bbe7c5"
+    }
+  ],
+  "totalGrossUSDCTransferEvents": "0.002",
+  "netUSDCValueTransferredBetweenDistinctBuyerAndMerchant": "0",
+  "samePayerAndReceiver": true,
+  "twoDifferentAuthorizationNonces": true,
+  "configuredMerchantQuotes": {
+    "/api/insights": "0.001",
+    "/api/report": "0.003"
+  },
+  "evidenceSatisfiesTwoDifferentPaidEndpoints": false,
+  "agentTaskCompleted": "NOT_ESTABLISHED",
+  "paymentResponse200ForBoth": "NOT_PROVIDED",
+  "caution": "Both transactions are valid on-chain EIP-3009 USDC transferWithAuthorization executions, but both transfer 0.001 USDC from a wallet to itself. These public transactions do not establish one purchase of the 0.003 USDC report route or a completed buyer task. A funded separate buyer wallet and receipt-backed task evidence are still needed."
+}
